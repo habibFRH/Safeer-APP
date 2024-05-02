@@ -1,0 +1,56 @@
+{
+    "countries": [
+      {
+        "name": "USA",
+        "network_chips": [
+          {
+            "name": "Verizon",
+            "price": "$50",
+            "privileges": ["Unlimited calls", "5GB data"],
+            "features": ["4G LTE support", "Nationwide coverage"]
+          },
+          {
+            "name": "AT&T",
+            "price": "$45",
+            "privileges": ["Unlimited calls", "10GB data"],
+            "features": ["5G support", "International roaming"]
+          }
+        ]
+      },
+      {
+        "name": "UK",
+        "network_chips": [
+          {
+            "name": "EE",
+            "price": "£30",
+            "privileges": ["Unlimited calls", "3GB data"],
+            "features": ["5G support", "Free EU roaming"]
+          },
+          {
+            "name": "O2",
+            "price": "£25",
+            "privileges": ["Unlimited calls", "5GB data"],
+            "features": ["4G LTE support", "Priority customer service"]
+          }
+        ]
+      },
+      {
+        "name": "Germany",
+        "network_chips": [
+          {
+            "name": "Telekom",
+            "price": "€40",
+            "privileges": ["Unlimited calls", "7GB data"],
+            "features": ["5G support", "Free EU calls"]
+          },
+          {
+            "name": "Vodafone",
+            "price": "€35",
+            "privileges": ["Unlimited calls", "10GB data"],
+            "features": ["4G LTE support", "International roaming"]
+          }
+        ]
+      }
+    ]
+  }
+  
