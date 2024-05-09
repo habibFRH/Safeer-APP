@@ -1,78 +1,164 @@
-// ignore_for_file: use_build_context_synchronously
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../auth/auth_service.dart';
-import 'customLogoAuth.dart';
+class CustomDrawer extends StatefulWidget {
+  const CustomDrawer({Key? key}) : super(key: key);
 
-class CustomDrawer extends StatelessWidget {
-  CustomDrawer({super.key});
-  final AuthService _authService = AuthService();
+  @override
+  State<CustomDrawer> createState() => _CustomDrawerState();
+}
+
+class _CustomDrawerState extends State<CustomDrawer> {
+  bool _isDark = false;
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      child: Container(
-        color: Colors.white,
-        child: ListView(children: [
-          const CustomLogoAuth(
-            height: 150,
-            width: 150,
+    return Theme(
+      data: _isDark ? ThemeData.dark() : ThemeData.light(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Settings"),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
           ),
-          Container(
-            height: 70,
-          ),
-          Card(
-            child: ListTile(
-              onTap: () {
-                Navigator.pushNamed(context, '/help_page');
-              },
-              leading: const Icon(
-                Icons.help_center,
-                color: Colors.black,
-              ),
-              title: const Text(
-                "Help me",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
+        ),
+        body: Center(
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: ListView(
+              children: [
+                _SingleSection(
+                  title: "General",
+                  children: [
+                    _CustomListTile(
+                        title: "Dark Mode",
+                        icon: Icons.dark_mode_outlined,
+                        trailing: Switch(
+                            value: _isDark,
+                            onChanged: (value) {
+                              setState(() {
+                                _isDark = value;
+                              });
+                            })),
+                    const _CustomListTile(
+                        title: "Notifications",
+                        icon: Icons.notifications_none_rounded),
+                    const _CustomListTile(
+                        title: "Security Status",
+                        icon: CupertinoIcons.lock_shield),
+                  ],
+                ),
+                const Divider(),
+                const _SingleSection(
+                  title: "Organization",
+                  children: [
+                    _CustomListTile(
+                        title: "Profile", icon: Icons.person_outline_rounded),
+                    _CustomListTile(
+                        title: "Messaging", icon: Icons.message_outlined),
+                    _CustomListTile(
+                        title: "Calling", icon: Icons.phone_outlined),
+                    _CustomListTile(
+                        title: "People", icon: Icons.contacts_outlined),
+                    _CustomListTile(
+                        title: "Calendar", icon: Icons.calendar_today_rounded)
+                  ],
+                ),
+                const Divider(),
+                _SingleSection(
+                  children: [
+                    _CustomListTile(
+                        title: "Help & Feedback",
+                        icon: Icons.help_outline_rounded),
+                    _CustomListTile(
+                        title: "About", icon: Icons.info_outline_rounded),
+                    _CustomListTile(
+                      title: "Sign out",
+                      icon: Icons.exit_to_app_rounded,
+                      onTap: () {
+                        Navigator.pushNamed(context, '/');
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          Card(
-            child: ListTile(
-              onTap: () {
-                Navigator.pushNamed(context, '/contactus_page');
-              },
-              leading: const Icon(
-                Icons.contact_page,
-                color: Colors.black,
-              ),
-              title: const Text(
-                "Contact us",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
-            ),
-          ),
-          Card(
-            color: Color.fromARGB(255, 255, 91, 79),
-            child: ListTile(
-              onTap: () async {
-                await _authService.signOut();
-                Navigator.pushNamed(context, '/');
-              },
-              leading: Icon(
-                Icons.login_outlined,
-                color: Colors.red[100],
-              ),
-              title: Text(
-                "LOGOUT",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red[100]),
-              ),
-            ),
-          ),
-        ]),
+        ),
       ),
+    );
+  }
+}
+
+class _CustomListTile extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Widget? trailing;
+  final VoidCallback? onTap; // Add a callback function for onTap
+  const _CustomListTile({
+    Key? key,
+    required this.title,
+    required this.icon,
+    this.trailing,
+    this.onTap, // Include onTap in the constructor
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(title),
+      leading: Icon(icon),
+      trailing: trailing,
+      onTap: onTap, // Use onTap callback here
+    );
+  }
+}
+
+class _SingleSection extends StatelessWidget {
+  final String? title;
+  final List<Widget> children;
+  const _SingleSection({
+    Key? key,
+    this.title,
+    required this.children,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (title != null)
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              title!,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
+        Column(
+          children: children.map((child) {
+            // Check if the child is _CustomListTile
+            if (child is _CustomListTile) {
+              // For "Sign out" option, set the onTap callback to navigate to '/'
+              if (child.title == "Sign out") {
+                return _CustomListTile(
+                  title: child.title,
+                  icon: child.icon,
+                  trailing: child.trailing,
+                  onTap: () {
+                    Navigator.pushNamed(context, '/');
+                  },
+                );
+              }
+            }
+            return child;
+          }).toList(),
+        ),
+      ],
     );
   }
 }

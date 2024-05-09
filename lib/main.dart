@@ -8,8 +8,6 @@ import 'package:safeer/auth/sign_up_page.dart';
 import 'package:safeer/home_page.dart';
 import 'package:safeer/pages/HotelsPage.dart';
 import 'package:safeer/pages/add_request.dart';
-import 'package:safeer/pages/airports_page.dart';
-import 'package:safeer/pages/chips.dart';
 import 'package:safeer/pages/helpPage.dart';
 import 'package:safeer/pages/SimCard.dart';
 import 'pages/contactUs.dart';
@@ -42,10 +40,8 @@ class MyApp extends StatelessWidget {
         '/help_page': (context) => const HelpPage(),
         '/Addrequest': (context) => const AddRequest(),
         '/contactus_page': (context) => const ContactUsPage(),
-        '/networkchip': (context) => const NetworkChipsPage(),
         '/simcard': (context) => const SimCardPage(),
         '/hotelspage': (context) => HotelsPage(),
-        '/airportspage': (context) => AirportsPage(),
       },
     );
   }

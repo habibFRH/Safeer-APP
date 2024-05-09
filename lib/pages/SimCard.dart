@@ -11,14 +11,14 @@ class SimCardPage extends StatelessWidget {
       drawer: CustomDrawer(),
       appBar: AppBar(
         title: const Text(
-          'Sim Card',
+          'Safeer Sim Card',
           style: TextStyle(
             color: Colors.white,
             fontSize: 28,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: const Color(0xff5E17EB),
+        backgroundColor: const Color(0xFF0D6FE5),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

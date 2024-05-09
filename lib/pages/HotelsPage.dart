@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:safeer/components/drawer.dart';
+import 'package:safeer/components/hotellisttile.dart';
 
 class HotelsPage extends StatefulWidget {
   @override
@@ -10,93 +8,203 @@ class HotelsPage extends StatefulWidget {
 }
 
 class _HotelsPageState extends State<HotelsPage> {
-  List<Map<String, dynamic>> hotels = [];
-  Position? currentPosition;
-  List<Map<String, dynamic>> nearestHotels = [];
-  List<Map<String, dynamic>> searchedHotels = [];
-  bool isSearching = false;
-  TextEditingController searchController = TextEditingController();
+  String selectedCountry = 'All'; // Default value for country dropdown
+  String selectedPriceRange = 'Any'; // Default value for price range dropdown
 
-  @override
-  void initState() {
-    super.initState();
-    _loadHotels();
-  }
+final Map<String, List<Map<String, dynamic>>> countriesWithHotels = {
+  'All': [
+    {
+      'name': 'Sheraton Hotel',
+      'address': '123 Main Street, City A',
+      'price': 100,
+      'currency': '\$',
+    },
+    {
+      'name': 'Hilton Garden Inn',
+      'address': '456 Elm Street, City B',
+      'price': 150,
+      'currency': '\$',
+    },
+    {
+      'name': 'Marriott Courtyard',
+      'address': '789 Oak Street, City C',
+      'price': 120,
+      'currency': '\$',
+    },
+    {
+      'name': 'Paris Marriott Champs Elysees Hotel',
+      'address': '123 Rue Principale, Ville D',
+      'price': 200,
+      'currency': '€',
+    },
+    {
+      'name': 'Hôtel Plaza Athénée',
+      'address': '456 Rue des Roses, Ville E',
+      'price': 180,
+      'currency': '€',
+    },
+    {
+      'name': 'The Peninsula Paris',
+      'address': '789 Rue du Moulin, Ville F',
+      'price': 220,
+      'currency': '€',
+    },
+    {
+      'name': 'New York Marriott Marquis',
+      'address': '123 Street, City G',
+      'price': 80,
+      'currency': '\$',
+    },
+    {
+      'name': 'The Ritz-Carlton New York, Central Park',
+      'address': '456 Boulevard, City H',
+      'price': 250,
+      'currency': '\$',
+    },
+    {
+      'name': 'Four Seasons Hotel New York Downtown',
+      'address': '789 Avenue, City I',
+      'price': 190,
+      'currency': '\$',
+    },
+    {
+      'name': 'The Langham, New York, Fifth Avenue',
+      'address': '123 Street, City J',
+      'price': 150,
+      'currency': '€',
+    },
+    {
+      'name': 'W New York - Times Square',
+      'address': '456 Boulevard, City K',
+      'price': 210,
+      'currency': '€',
+    },
+    {
+      'name': 'The Plaza Hotel',
+      'address': '789 Avenue, City L',
+      'price': 140,
+      'currency': '€',
+    },
+    {
+      'name': 'Tokyo Marriott Hotel',
+      'address': '1-1-1, Chiyoda, Tokyo',
+      'price': 18000,
+      'currency': '¥',
+    },
+    {
+      'name': 'The Ritz-Carlton, Kyoto',
+      'address': 'Kamogawa Nijo-Ohashi Hotori, Nakagyo Ward, Kyoto',
+      'price': 35000,
+      'currency': '¥',
+    },
+    {
+      'name': 'The Peninsula Hong Kong',
+      'address': 'Salisbury Rd, Tsim Sha Tsui, Hong Kong',
+      'price': 3500,
+      'currency': 'HK\$',
+    },
+  ],
+  'USA': [
+    {
+      'name': 'Sheraton Hotel',
+      'address': '123 Main Street, City A',
+      'price': 100,
+      'currency': '\$',
+    },
+    {
+      'name': 'Hilton Garden Inn',
+      'address': '456 Elm Street, City B',
+      'price': 150,
+      'currency': '\$',
+    },
+    {
+      'name': 'Marriott Courtyard',
+      'address': '789 Oak Street, City C',
+      'price': 120,
+      'currency': '\$',
+    },
+    {
+      'name': 'New York Marriott Marquis',
+      'address': '123 Street, City G',
+      'price': 80,
+      'currency': '\$',
+    },
+    {
+      'name': 'The Ritz-Carlton New York, Central Park',
+      'address': '456 Boulevard, City H',
+      'price': 250,
+      'currency': '\$',
+    },
+    {
+      'name': 'Four Seasons Hotel New York Downtown',
+      'address': '789 Avenue, City I',
+      'price': 190,
+      'currency': '\$',
+    },
+  ],
+  'France': [
+    {
+      'name': 'Paris Marriott Champs Elysees Hotel',
+      'address': '123 Rue Principale, Ville D',
+      'price': 200,
+      'currency': '€',
+    },
+    {
+      'name': 'Hôtel Plaza Athénée',
+      'address': '456 Rue des Roses, Ville E',
+      'price': 180,
+      'currency': '€',
+    },
+    {
+      'name': 'The Peninsula Paris',
+      'address': '789 Rue du Moulin, Ville F',
+      'price': 220,
+      'currency': '€',
+    },
+    {
+      'name': 'The Langham, New York, Fifth Avenue',
+      'address': '123 Street, City J',
+      'price': 150,
+      'currency': '€',
+    },
+    {
+      'name': 'W New York - Times Square',
+      'address': '456 Boulevard, City K',
+      'price': 210,
+      'currency': '€',
+    },
+    {
+      'name': 'The Plaza Hotel',
+      'address': '789 Avenue, City L',
+      'price': 140,
+      'currency': '€',
+    },
+  ],
+  'Japan': [
+    {
+      'name': 'Tokyo Marriott Hotel',
+      'address': '1-1-1, Chiyoda, Tokyo',
+      'price': 18000,
+      'currency': '¥',
+    },
+    {
+      'name': 'The Ritz-Carlton, Kyoto',
+      'address': 'Kamogawa Nijo-Ohashi Hotori, Nakagyo Ward, Kyoto',
+      'price': 35000,
+      'currency': '¥',
+    },
+  ],
+  'Hong Kong': [
+    {
+      'name': 'The Peninsula Hong Kong',
+      'address': 'Salisbury Rd, Tsim Sha Tsui, Hong Kong',
+      'price': 3500,
+      'currency': 'HK\$',
+    },
+  ],
+  // Add more countries and hotels as needed
+};
 
-  // Load hotels from JSON file
-  Future<void> _loadHotels() async {
-    String data = await rootBundle.loadString('data/hotels.json');
-    List<dynamic> jsonData = json.decode(data);
-    hotels = jsonData.map((hotel) => hotel as Map<String, dynamic>).toList();
-  }
-
-  // Get the current geolocation and find nearest hotels
-  Future<void> _findNearestHotels() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      setState(() {
-        nearestHotels = [];
-      });
-      return;
-    }
-
-    LocationPermission permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
-      setState(() {
-        nearestHotels = [];
-      });
-      return;
-    }
-
-    currentPosition = await Geolocator.getCurrentPosition();
-
-    if (currentPosition != null) {
-      // Calculate distances and sort the hotels by distance from the current location
-      hotels.sort((a, b) {
-        double distanceA = Geolocator.distanceBetween(
-          currentPosition!.latitude,
-          currentPosition!.longitude,
-          a['geo']['lat'],
-          a['geo']['lon'],
-        );
-
-        double distanceB = Geolocator.distanceBetween(
-          currentPosition!.latitude,
-          currentPosition!.longitude,
-          b['geo']['lat'],
-          b['geo']['lon'],
-        );
-
-        return distanceA.compareTo(distanceB);
-      });
-
-      setState(() {
-        nearestHotels = hotels.take(10).toList();
-      });
-    }
-  }
-
-  // Filter hotels by name
-  void _searchHotels(String query) {
-    setState(() {
-      searchedHotels = hotels
-          .where((hotel) =>
-              hotel['name'].toLowerCase().contains(query.toLowerCase()))
-          .toList();
-      isSearching = true;
-    });
-  }
-
-  // Navigate to hotel details page
-  void _navigateToHotelDetails(Map<String, dynamic> hotel) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => HotelDetailsPage(hotel: hotel),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,167 +212,96 @@ class _HotelsPageState extends State<HotelsPage> {
       drawer: CustomDrawer(),
       appBar: AppBar(
         title: const Text(
-          'Hotels',
+          'Safeer Hotels',
           style: TextStyle(
             color: Colors.white,
             fontSize: 28,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: const Color(0xff5E17EB),
+        backgroundColor: const Color(0xFF0D6FE5),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ElevatedButton(
-            onPressed: () async {
-              await _findNearestHotels();
-            },
-            child: Text('Find Nearest Hotels'),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                DropdownButton<String>(
+                  value: selectedCountry,
+                  onChanged: (newValue) {
+                    setState(() {
+                      selectedCountry = newValue!;
+                    });
+                  },
+                  items: countriesWithHotels.keys.map((String country) {
+                    return DropdownMenuItem<String>(
+                      value: country,
+                      child: Text(country),
+                    );
+                  }).toList(),
+                ),
+                SizedBox(width: 16),
+                DropdownButton<String>(
+                  value: selectedPriceRange,
+                  onChanged: (newValue) {
+                    setState(() {
+                      selectedPriceRange = newValue!;
+                    });
+                  },
+                  items: [
+                    'Any',
+                    '\$0 - \$100',
+                    '\$101 - \$200',
+                    '\$201 and above',
+                  ].map((String priceRange) {
+                    return DropdownMenuItem<String>(
+                      value: priceRange,
+                      child: Text(priceRange),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
           ),
-          SizedBox(height: 20),
           Expanded(
-            child: (isSearching ? searchedHotels : nearestHotels).isEmpty
-                ? Center(child: Text('No nearby hotels found.'))
-                : ListView.builder(
-                    itemCount: isSearching
-                        ? searchedHotels.length
-                        : nearestHotels.length,
-                    itemBuilder: (context, index) {
-                      final hotel = isSearching
-                          ? searchedHotels[index]
-                          : nearestHotels[index];
-                      double distance = Geolocator.distanceBetween(
-                        currentPosition!.latitude,
-                        currentPosition!.longitude,
-                        hotel['geo']['lat'],
-                        hotel['geo']['lon'],
-                      );
-
-                      return Card(
-                        child: ListTile(
-                          title: Text(hotel['name']),
-                          subtitle: Text(
-                            'Distance: ${(distance / 1000).toStringAsFixed(2)} km\nAddress: ${hotel['address']}',
-                          ),
-                          onTap: () {
-                            _navigateToHotelDetails(hotel);
-                          },
-                        ),
-                      );
-                    },
-                  ),
+            child: ListView.builder(
+              itemCount: countriesWithHotels[selectedCountry]!.length,
+              itemBuilder: (context, index) {
+                final hotel = countriesWithHotels[selectedCountry]![index];
+                // Check if the hotel matches the selected price range
+                if (selectedPriceRange != 'Any') {
+                  final price = hotel['price'] as int;
+                  if (!isHotelInPriceRange(selectedPriceRange, price)) {
+                    return SizedBox.shrink(); // Hide the hotel if it doesn't match the selected price range
+                  }
+                }
+                return CustomListTile(
+                  state: hotel['price'].toString(),
+                  title: hotel['name'],
+                  subTitle: hotel['address'],
+                  currency: hotel['currency'],
+                );
+              },
+            ),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            isSearching = true;
-          });
-          showSearchDialog(context);
-        },
-        child: Icon(Icons.search),
-      ),
     );
   }
 
-  void showSearchDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Search Hotel'),
-          content: TextField(
-            controller: searchController,
-            decoration: InputDecoration(
-              hintText: 'Enter hotel name',
-            ),
-            onChanged: _searchHotels,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class HotelDetailsPage extends StatefulWidget {
-  final Map<String, dynamic> hotel;
-
-  HotelDetailsPage({required this.hotel});
-
-  @override
-  _HotelDetailsPageState createState() => _HotelDetailsPageState();
-}
-
-class _HotelDetailsPageState extends State<HotelDetailsPage> {
-  bool bookingStatus = false; // State variable to track booking status
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.hotel['name']),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.hotel['name'],
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text('Address: ${widget.hotel['address']}'),
-            SizedBox(height: 8),
-            Text('Phone: ${widget.hotel['phone']}'),
-            SizedBox(height: 8),
-            Text('Website: ${widget.hotel['url']}'),
-            SizedBox(height: 8),
-            Text('Details: ${widget.hotel['content']}'),
-            SizedBox(height: 8),
-            Text('Details: ${widget.hotel['price']}'),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  bookingStatus = true; // Set booking status to true
-                });
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      content: Text('Room has been booked!'),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text('OK'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              child: Text('Book Room'),
-              style: ElevatedButton.styleFrom(
-                primary: bookingStatus
-                    ? Colors.green
-                    : Theme.of(context).primaryColor,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+  // Function to check if a hotel is in the selected price range
+  bool isHotelInPriceRange(String priceRange, int price) {
+    switch (priceRange) {
+      case '\$0 - \$100':
+        return price >= 0 && price <= 100;
+      case '\$101 - \$200':
+        return price >= 101 && price <= 200;
+      case '\$201 and above':
+        return price >= 201;
+      default:
+        return true; // Any price range, always return true
+    }
   }
 }

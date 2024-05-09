@@ -1,11 +1,13 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:safeer/components/drawer.dart';
+import 'package:safeer/pages/Dashboardpage.dart';
 import 'package:safeer/pages/HotelsPage.dart';
+import 'package:safeer/pages/NewsFeedPage1.dart';
 import 'package:safeer/pages/QRcode.dart';
-import 'package:safeer/pages/chips.dart';
 import 'package:safeer/pages/requests_states.dart';
 import 'package:safeer/pages/SimCard.dart';
+import 'package:safeer/pages/translation.dart';
 import './auth/auth_service.dart';
 
 class HomePage extends StatefulWidget {
@@ -24,28 +26,27 @@ class _HomePageState extends State<HomePage> {
       color: Colors.white,
     ),
     const Icon(
-      Icons.add,
+      Icons.call_end,
       color: Colors.white,
     ),
     const Icon(
-      Icons.task_alt_sharp,
-      color: Colors.white,
-    ),
-    const Icon(
-      Icons.task_alt_sharp,
+      Icons.translate,
       color: Colors.white,
     ),
     const Icon(
       Icons.food_bank_outlined,
       color: Colors.white,
     ),
+    const Icon(
+      Icons.hotel,
+      color: Colors.white,
+    ),
   ];
   final screens = [
-    const RequestsState(),
+    const NewsFeedPage1(),
     const SimCardPage(),
-    const NetworkChipsPage(),
+    const Trdusctionpage(),
     const BarcodeScannerPage(),
-    // AirportsPage(),
     HotelsPage()
   ];
   @override
@@ -63,7 +64,7 @@ class _HomePageState extends State<HomePage> {
         items: items,
         backgroundColor: Colors.transparent,
         animationDuration: const Duration(milliseconds: 300),
-        color: const Color.fromARGB(255, 18, 194, 135),
+        color: const Color(0xFF0D6FE5),
       ),
     );
   }

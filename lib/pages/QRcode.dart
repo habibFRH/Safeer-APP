@@ -21,7 +21,7 @@ class BarcodeScannerPage extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: const Color(0xff5E17EB),
+        backgroundColor: const Color(0xFF0D6FE5),
       ),
       body: Center(
         child: ElevatedButton(
@@ -59,9 +59,9 @@ class BarcodeScannerPage extends StatelessWidget {
       desc = "You cannot eat this food!!!";
       dialogType = DialogType.error;
     } else {
-      message = "Scan Canceled";
-      desc = "The scan operation was not completed.";
-      dialogType = DialogType.warning;
+      message = "Halal";
+      desc = "You can eat this food";
+      dialogType = DialogType.success;
     }
 
     _showAwesomeDialog(context, message, dialogType, desc);
